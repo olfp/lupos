@@ -7,7 +7,7 @@ include $(CSTDLIB)/Config.mk
 
 CIRCLEHOME = $(CSTDLIB)/libs/circle
 NEWLIBDIR = $(CSTDLIB)/install/$(NEWLIB_ARCH)
-LUADIR = liblua
+LUADIR = lua-5.4.1/src
 
 OBJS	= main.o kernel.o luaint.o lconsole.o lfilesystem.o
 
