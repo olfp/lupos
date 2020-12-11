@@ -15,13 +15,15 @@ function list(file)
     	f:close()	
 	print(content)
 end
-oprint = print
-function print(t)
-  if(type(t) == "table") then
-    for x, y in pairs(t) do
-      oprint(x, y)
+if not oprint then
+  oprint = print
+  function print(t)
+    if(t and type(t) == "table") then
+      for x, y in pairs(t) do
+        oprint(x, y)
+      end
+    else
+      oprint(t)
     end
-  else
-    oprint(t)
   end
 end
