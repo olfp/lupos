@@ -143,7 +143,10 @@ public:
 	/// \param nWidth   Screen width in pixels (0 for default resolution)
 	/// \param nHeight  Screen height in pixels (0 for default resolution)
 	/// \param bVirtual FALSE for physical screen, TRUE for virtual screen buffer
-	CScreenDevice (unsigned nWidth, unsigned nHeight, unsigned nColor, unsigned nBackColor, boolean bVirtual = FALSE);
+	CScreenDevice (unsigned nWidth, unsigned nHeight, 
+		unsigned nColor = NORMAL_COLOR, 
+		unsigned nBackColor = NBACK_COLOR
+		, boolean bVirtual = FALSE);
 
 	~CScreenDevice (void);
 

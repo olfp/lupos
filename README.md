@@ -20,7 +20,29 @@ A big, big thank you goes out to the people who wrote most of the code used:
 LUPOS started on a Raspi 3b+ and is now developed on a Raspi 400. There is no reason it should not run on the other Raspis - as supported by Circle - but this is untested.
 
 ## Building
-I will supply build instructions shortly
+1. Clone the GitHub repository:
+```bash
+	git clone https://github.com/olfp/lupos.git
+```
+2. Configure your Pi version & environment
+```bash
+	./configure -r 4
+```
+The -r option gives the Pi verison 1, 2, 3 or 4 (4 for 400).
+3. Build Circle & other libraries needed
+```bash
+	make libs
+```
+4. Build LUPOS
+```bash
+	make
+```
+5. Fetch Raspi firmware files (optional)
+```bash
+	cd circle-stdlib/libs/circle/boot && make
+```
+Follow the instuctions in the README. You can also use a working Rasbian image.
+6. Copy needed boot files (if needed) and the kernel image (Pi 400: kernel7l.img) to an MicroSD card, plug in Pi, enjoy
 
 ## Status
 Boot to a REPL which accepts Lua code. Filessystem commands for FAT on SD/USB as provided by Circle/FATFS are partly there: dir, go (cd), path (pwd) and del are present. The REPL is tweaked to call functions without arguments even if th etrailing parentheses are mising. This means you can just type "dir" to get a directory. 

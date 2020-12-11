@@ -27,4 +27,11 @@ LIBS := "$(NEWLIBDIR)/lib/libm.a" "$(NEWLIBDIR)/lib/libc.a" "$(NEWLIBDIR)/lib/li
   	$(CIRCLEHOME)/lib/libcircle.a \
 	$(LUADIR)/liblua.a
 
+libs:
+	$(MAKE) -C $(CSTDLIB)
+	$(MAKE) -C $(CIRCLEHOME)/addon/fatfs
+	$(MAKE) -C $(CIRCLEHOME)/addon/SDCard
+	cd $(CIRCLEHOME)/addon/wlan && ./makeall --nosample
+	$(MAKE) -C $(LUADIR) liblua.a
+
 -include $(DEPS)
