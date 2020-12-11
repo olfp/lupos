@@ -14,7 +14,7 @@ A big, big thank you goes out to the people who wrote most of the code used:
 * Stephan Mühlstrasser fo [Circe-Stdlib](https://github.com/smuehlst/circle-stdlib).
 * Corinna Vinschen and Jeff Johnston for [Newlib](https://sourceware.org/newlib/).
 * Roberto Ierusalimschy, Waldemar Celes and Luiz Henrique de Figueiredo for [Lua](http://www.lua.org)
-philanc for the [Pure Lua Editor](https://github.com/philanc/ple)
+* philanc for the [Pure Lua Editor](https://github.com/philanc/ple)
 
 ## Platform
 LUPOS started on a Raspi 3b+ and is now developed on a Raspi 400. There is no reason it should not run on the other Raspis - as supported by Circle - but this is untested.
