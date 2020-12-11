@@ -1,0 +1,2 @@
+/usr/bin/ar qc libLua52.a CMakeFiles/Lua52.dir/Lua/LuaLibrary5.2.0.cpp.o
+/usr/bin/ranlib libLua52.a

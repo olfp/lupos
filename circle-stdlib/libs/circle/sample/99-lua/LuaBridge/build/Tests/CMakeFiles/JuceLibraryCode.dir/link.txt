@@ -1,0 +1,2 @@
+/usr/bin/ar qc libJuceLibraryCode.a CMakeFiles/JuceLibraryCode.dir/JuceLibraryCode/BinaryData.cpp.o
+/usr/bin/ranlib libJuceLibraryCode.a
