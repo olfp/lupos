@@ -12,6 +12,8 @@ It look like this:
 
 ![LUPOS Screenshot](https://olfp.github.io/LUPOS-Snap0.png)
 
+A video of LUPOS booting is avaliable [here](https://youtu.be/QnL8gHgV4kQ).
+
 A big, big thank you goes out to the people who wrote most of the code used:
 
 * Rene Stange for [Circle](https://github.com/rsta2/circle).
