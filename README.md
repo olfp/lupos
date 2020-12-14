@@ -8,6 +8,10 @@ a Lua (http://www.lua.org) interpreter mated to the Circle
 bare metal environment (https://github.com/rsta2/circle) 
 for the Raspberry Pi (https://www.raspberrypi.org) with the help of Circle-Stdlib (https://github.com/smuehlst/circle-stdlib).
 
+It look like this:
+
+![LUPOS Screenshot](https://olfp.github.io/LUPOS-Snap0.png)
+
 A big, big thank you goes out to the people who wrote most of the code used:
 
 * Rene Stange for [Circle](https://github.com/rsta2/circle).
