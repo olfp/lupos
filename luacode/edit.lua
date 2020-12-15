@@ -1347,7 +1347,10 @@ function edit(fname)
 	local ll
 	if fname then
 		ll, err = readfile(fname) -- load file as a list of lines
-		if not ll then print(err); return end
+		--if not ll then print(err); return end
+		if not ll then 
+			ll = { "" }
+		end
 	else
 		ll = { "" }
 		fname = "unnamed"
@@ -1365,7 +1368,7 @@ function edit(fname)
 	--term.left(999); term.down(999)
 	style.normal()
 	flush()
-	--~ 	ln.setmode(omode)
+	--con.setmode(omode)
 	term.restoremode(prevmode)	
   if not ok then -- display traceback in case of error
 		print(msg)

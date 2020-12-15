@@ -7,7 +7,7 @@ function reload(name)
   _G[name] = require(name)
 end
 function run(name) 
-  dofile(name .. ".lua")
+   return dofile(name .. ".lua")
 end
 function list(file)
 	local f = assert(io.open(file, "rb"))
@@ -16,14 +16,14 @@ function list(file)
 	print(content)
 end
 if not oprint then
-  oprint = print
-  function print(t)
-    if(t and type(t) == "table") then
-      for x, y in pairs(t) do
-        oprint(x, y)
-      end
-    else
-      oprint(t)
+oprint = print
+function print(t)
+  if(t and type(t) == "table") then
+    for x, y in pairs(t) do
+      oprint(x, y)
     end
+  else
+    oprint(t)
   end
+end
 end
