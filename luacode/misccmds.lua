@@ -13,17 +13,21 @@ function list(file)
 	local f = assert(io.open(file, "rb"))
     	local content = f:read("*all")
     	f:close()	
-	print(content)
+	return content
 end
-if not oprint then
-oprint = print
-function print(t)
-  if(t and type(t) == "table") then
-    for x, y in pairs(t) do
-      oprint(x, y)
+function help()
+	return list("sd:/sys/help.txt")
+end
+if not rawprint then
+  rawprint = print
+  function print(t)
+    if(t and type(t) == "table") then
+      for x, y in pairs(t) do
+        rawprint(x, y)
+      end
+    else
+      rawprint(t)
     end
-  else
-    oprint(t)
   end
 end
-end
+return"ok"

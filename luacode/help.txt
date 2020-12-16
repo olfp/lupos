@@ -1,0 +1,23 @@
+This is the LUPOS REPL, the Read-Eval-Print-Loop. Whatever you type is evaluated as a 
+Lua statement, the result is printed. For global functions without arguments the REPL 
+adds the (). This way you may type 'dir' or 'path' instead of 'dir()' and 'path()'.
+
+LUPOS file system functions are:
+dir       : list files in folder
+path      : get current path
+go        : go to path/volume
+up        : go up one folder
+attr      : show and/or set/delete file attributes
+copy      : copy file(s)
+ren(ame)  : rename or move file(s) (alias: move)
+list	  : show file contents
+del       : delete file(s)
+folder    : make new folder(s)
+vol(umes) : list active volumes
+free      : show space left on volume
+
+Other LUPOS functions:
+clear     : clear the screen
+edit      : edit a file
+
+Many of these give more help when called with argument"??". Example: dir"??"
