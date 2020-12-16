@@ -1,6 +1,13 @@
 -- lupos fs commands
 fs=filesystem
 path=fs.getpath
+if not io.rawopen then
+  io.rawopen=io.open
+  io.open = function(fname, ...)
+    fs.checkdir(fname)
+    return io.rawopen(fname, ...)
+  end
+end
 function fsparse(pathplus, maskdef, fromto)
   local pathplus = pathplus or ""
   local fs = filesystem
@@ -44,9 +51,76 @@ function fsparse(pathplus, maskdef, fromto)
   end
   return dir, path, mask, pattern, opts
 end
-dofile("del.lua")
-dofile("dir.lua")
-dofile("go.lua")
+function free(pathplus)
+  local pathplus = pathplus or ""
+  local fs = filesystem
+  local out = ""
+  local path, opts = pathplus:match("^([^?]*)%??([^\\/]-)$")
+  path = path or ""
+  local savepath = fs.getpath()
+  local blks = fs.getfree(path)
+  if blks then
+    if opts:find("b") then
+	out = "Free space on "..path.." "..tostring(math.floor(blks*512)).." Bytes"
+    elseif opts:find("k") then
+	out = "Free space on "..path.." "..tostring(math.floor(blks//2)).." kB"
+    elseif opts:find("m") then
+	out = "Free space on "..path.." "..tostring(math.floor(blks//2048)).." MB"
+    else
+	out = tostring(math.floor(blks))
+    end
+  else
+    out = "Error geting free blocks from '"..path.."'"
+  end
+  go(savepath)
+  return (out:gsub("^(.-)%s*$", "%1"))
+end
+function volumes(arg)
+  local out = ""
+  if arg == "??" then
+    out = [[
+volumes: list available volumes
+]]
+  else 
+    local vollist = fs.getvols()
+    if vollist then
+      for i, vol in ipairs(vollist) do
+        local f = fs.getfree(vol..":")
+        if f then
+          out = out..vol.."\n"
+        end
+      end
+    else
+      out = "No volumes found."
+    end
+  end
+  return (out:gsub("^(.-)%s*$", "%1"))
+end
+function folder(pathplus)
+  local pathplus = pathplus or ""
+  local fs = filesystem
+  local out = ""
+  local path, opts = pathplus:match("^([^?]*)%??([^\\/]-)$")
+  if opts:find("?") then
+    out = [[
+folder: create a new folder
+Examples: folder "myfolder" ; folder "my/folder"
+Options after ?:
+	p - create all folders in path if needed (not implemented)
+]]
+  else 
+    path = path or ""
+    out = fs.mkdir(path)
+    out = out or "Could not create folder '"..path.."'"
+  end
+  return (out:gsub("^(.-)%s*$", "%1"))
+end
+dofile("/sys/del.lua")
+dofile("/sys/copy.lua")
+dofile("/sys/rename.lua")
+ren=rename
+dofile("/sys/dir.lua")
+dofile("/sys/go.lua")
 function up() return go("..") end
 return "ok"
 -- EOF

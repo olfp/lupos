@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fatfs/ff.h>
+static const char* const VolumeStr[FF_VOLUMES] = {FF_VOLUME_STRS};
 #include <lua.hpp>
                                                                       
 #include "kernel.h"
@@ -198,16 +199,19 @@ int lua_getfree(lua_State* state) {
   const char* name = lua_tostring(state, 1);
   DWORD free;
   FATFS *fs;
-  FRESULT Result = f_getfree(name, &free, &fs);
+  DIR dir;
+  FRESULT Result = f_mopendir(&dir, name);
   if(Result == FR_OK) {
-    lua_pushnumber(state, free);
-    return 1;
-  } else {
-    lua_pop(state, 1);
-    lua_pushnil(state);
-    lua_pushfstring(state, "getfree: error: %d", Result); 
-    return 2;
-  }
+    Result = f_getfree(name, &free, &fs);
+    if(Result == FR_OK) {
+      lua_pushnumber(state, free);
+      return 1;
+    }
+  } 
+  lua_pop(state, 1);
+  lua_pushnil(state);
+  lua_pushfstring(state, "getfree: error: %d", Result); 
+  return 2;
 }
 
 extern "C"
@@ -311,6 +315,36 @@ int lua_umount(lua_State* state) {
 }
 
 extern "C"
+int lua_mkfs(lua_State* state) {
+  if(!lua_isstring(state, 1)) {
+    lua_pushnil(state);
+    lua_pushfstring(state, "mkfs: No path.");
+    return 2;
+  }
+  const char* name = lua_tostring(state, 1);
+  FRESULT Result = f_mkfs(name, NULL, NULL, 4096);
+  if(Result == FR_OK) {
+    lua_pushstring(state, name);
+    return 1;
+  } else {
+    lua_pop(state, 1);
+    lua_pushnil(state);
+    lua_pushfstring(state, "mkfs: error: %d", Result); 
+    return 2;
+  }
+}
+
+extern "C"
+int lua_vols(lua_State* state) {
+  lua_newtable(state);
+  for(int i = 0; i < FF_VOLUMES; ) {
+    lua_pushstring(state, VolumeStr[i]);
+    lua_rawseti(state, -2, ++i);
+  }
+  return 1;
+}
+
+extern "C"
 int fsop_one(lua_State* state, FRESULT (*func)(const char *), const char *fname) {
   if(!lua_isstring(state, 1)) {
     lua_pushnil(state);
@@ -365,6 +399,8 @@ luaL_Reg const fs_funcs [] =
     { "rename",           lua_rename },
     { "attr",             lua_chmod },
     { "unmount",          lua_umount },
+    { "getvols",          lua_vols },
+    { "format",           lua_mkfs },
     { NULL,               NULL }
   };
 

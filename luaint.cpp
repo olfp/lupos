@@ -79,7 +79,16 @@ int lua_interface(CKernel *mKernel) {
     //mUSBHCI.UpdatePlugAndPlay();                                          
     printf("L0>");                                                        
     fflush(stdout);                                                       
-    if (fgets(line, sizeof(line), stdin) != nullptr){                     
+    if (fgets(line, sizeof(line), stdin) != nullptr) {
+      // trim line feed
+      line[strlen(line)-1] = '\0';
+      // check if bare fn name given
+      lua_getglobal(state, line);
+      int objtype = lua_type(state, -1);
+      if( objtype == LUA_TFUNCTION ) {
+	// try with no args
+	strncat(line, "()", sizeof(line)-strlen(line)-1);
+      }
       result = luaL_loadstring(state, line);                              
       if ( result != LUA_OK ) {                                           
 	print_error(state);                                               

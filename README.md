@@ -17,7 +17,7 @@ A video of LUPOS booting is avaliable [here](https://youtu.be/QnL8gHgV4kQ).
 A big, big thank you goes out to the people who wrote most of the code used:
 
 * Rene Stange for [Circle](https://github.com/rsta2/circle).
-* Stephan Mühlstrasser fo [Circe-Stdlib](https://github.com/smuehlst/circle-stdlib).
+* Stephan Mühlstrasser for [Circle-Stdlib](https://github.com/smuehlst/circle-stdlib).
 * Corinna Vinschen and Jeff Johnston for [Newlib](https://sourceware.org/newlib/).
 * Roberto Ierusalimschy, Waldemar Celes and Luiz Henrique de Figueiredo for [Lua](http://www.lua.org)
 * philanc for the [Pure Lua Editor](https://github.com/philanc/ple)
