@@ -51,19 +51,6 @@ Options after ?:
 	The FARHS options can be cumulated
 ]]
   else
-    local function attr2str(a)
-      local attrs = { 'A','F', 'V', 'S', 'H', 'R' }
-      local str = ""
-      for bit = 0,5 do
-        local ach = "-"
-        if (a & (1 << bit)) > 0 then
-          pos = 6 - bit
-          ach = attrs[pos]
-        end
-        str = ach .. str
-      end
-      return str
-    end
     local names = {}
     for f, t in pairs(dir) do
       table.insert(names, f)
@@ -102,7 +89,7 @@ Options after ?:
             else
               out = out..string.format("%10d ", s.size)
             end
-            out = out..attr2str(s.attributes).." "
+            out = out..fsattr2str(s.attributes).." "
           end
           out = out..f
           if single or long or n % dir_columns == 0 then
@@ -126,3 +113,4 @@ Options after ?:
   ::exit::
   return (out:gsub("^(.-)%s*$", "%1"))
 end
+return"ok"

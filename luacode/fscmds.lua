@@ -51,6 +51,19 @@ function fsparse(pathplus, maskdef, fromto)
   end
   return dir, path, mask, pattern, opts
 end
+function fsattr2str(a)
+  local attrs = { 'A','F', 'V', 'S', 'H', 'R' }
+  local str = ""
+  for bit = 0,5 do
+    local ach = "-"
+    if (a & (1 << bit)) > 0 then
+      pos = 6 - bit
+      ach = attrs[pos]
+    end
+    str = ach .. str
+  end
+  return str
+end
 function free(pathplus)
   local pathplus = pathplus or ""
   local fs = filesystem
@@ -96,6 +109,7 @@ volumes: list available volumes
   end
   return (out:gsub("^(.-)%s*$", "%1"))
 end
+vol=volumes
 function folder(pathplus)
   local pathplus = pathplus or ""
   local fs = filesystem
@@ -112,6 +126,74 @@ Options after ?:
     path = path or ""
     out = fs.mkdir(path)
     out = out or "Could not create folder '"..path.."'"
+  end
+  return (out:gsub("^(.-)%s*$", "%1"))
+end
+function attr(pathplus)
+  local pathplus = pathplus or ""
+  local fs = filesystem
+  local out = ""
+  local path, opts = pathplus:match("^([^?]*)%??([^\\/]-)$")
+  if opts:find("?") then
+    out = [[
+attr: show and/or set file attributes
+Examples: attr "myfile.lua" ; attr "sys.lua?Asr"
+Options after ?:
+	a - set archive attribute
+	A - delete archive attribute
+	s - set system attribute
+	S - delete system attribute
+	h - set hidden attribute
+	H - delete hidden attribute
+	r - set read-only attribute
+	R - delete read-only attribute
+]]
+  else 
+    path = path or ""
+    local s = fs.getstat(path)
+    out = fsattr2str(s.attributes)  
+    local amask, aflags = 0, 0
+    if opts:find("a") then
+	amask = amask | 0x20
+	aflags = aflags | 0x20
+    end
+    if opts:find("A") then
+	amask = amask | 0x20
+	aflags = aflags & ~0x20
+    end
+    if opts:find("s") then
+	amask = amask | 0x04
+	aflags = aflags | 0x04
+    end
+    if opts:find("S") then
+	amask = amask | 0x04
+	aflags = aflags & ~0x04
+    end
+    if opts:find("h") then
+	amask = amask | 0x02
+	aflags = aflags | 0x02
+    end
+    if opts:find("H") then
+	amask = amask | 0x02
+	aflags = aflags & ~0x02
+    end
+    if opts:find("r") then
+	amask = amask | 0x01
+	aflags = aflags | 0x01
+    end
+    if opts:find("R") then
+	amask = amask | 0x01
+	aflags = aflags & ~0x01
+    end
+    if amask > 0 then
+	ok = fs.attr(path, aflags, amask)
+	if not ok then
+	  out = "Error setting attributes on '"..path.."'"
+	else
+	  s = fs.getstat(path)
+	  out = out.." -> "..fsattr2str(s.attributes)
+	end
+    end	
   end
   return (out:gsub("^(.-)%s*$", "%1"))
 end

@@ -642,6 +642,11 @@ end
 
 e.redisplay = editor.fullredisplay
 
+function e.subshell()
+	clear()
+	repl()
+	e.redisplay()
+end
 
 function e.gohome(b) b:setcurj(0) end
 function e.goend(b) b:setcurj() end
@@ -1188,6 +1193,7 @@ Edition
 	^H, bcksp	delete previous character
 	^space		mark  (set beginning of selection)
 	^W		wipe (cut selection or cut line if no selection)
+	ESC s		open a sub-repl (return with ^D on empty line)
 	ESC w		copy selection
 	^Y		yank (paste)
 	ESC 5		replace
@@ -1285,6 +1291,7 @@ editor.bindings_esc = {  -- ESC<key>
 	[55] = e.replaceagain,	-- ESC 7 -&
 	[60] = e.gobot,		-- ESC <
 	[62] = e.goeot,		-- ESC >	
+	[115] = e.subshell,	-- ESC s
 	[119] = e.copy,		-- ESC w
 }--editor.bindings_esc
 	
@@ -1378,4 +1385,4 @@ function edit(fname)
 	end 
 	return "" -- to preven "nil" from repl
 end
-
+return"ok"
