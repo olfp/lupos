@@ -48,7 +48,7 @@ Options after ?:
 	H - only hidden files
 	R - only read-only files
 	
-	The FARHS options can be cumulated
+	The FARHS options can be culmiated
 ]]
   else
     local names = {}

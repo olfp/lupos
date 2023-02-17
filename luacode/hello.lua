@@ -1,6 +1,6 @@
 -- lupos hello.lua
 _lupos = "\027[31mL\027[32mU\027[33mP\027[35mO\027[36mS\027[0m"
-package.path = "?.lua;sd:/sys/?.lua"
+package.path = "?.lua;usb:/sys/?.lua"
 dofile("/sys/repl.lua")
 dofile("/sys/fscmds.lua")
 dofile("/sys/misccmds.lua")

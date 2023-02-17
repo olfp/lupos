@@ -70,7 +70,6 @@ int lua_getstat(lua_State* state) {
     lua_pushinfo(state, &info);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     sprintf(buf, "stat: error: %d", Result);
     lua_pushstring(state, buf);
@@ -182,7 +181,6 @@ int lua_getcwd(lua_State* state) {
     lua_pushstring(state, buf);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     lua_pushfstring(state, "getcwd: error: %d", Result); 
     return 2;
@@ -208,7 +206,6 @@ int lua_getfree(lua_State* state) {
       return 1;
     }
   } 
-  lua_pop(state, 1);
   lua_pushnil(state);
   lua_pushfstring(state, "getfree: error: %d", Result); 
   return 2;
@@ -228,7 +225,6 @@ int lua_rename(lua_State* state) {
     lua_pushstring(state, nnew);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     lua_pushfstring(state, "rename: Error, result code: %d", Result); 
     return 2;
@@ -264,7 +260,6 @@ int lua_fcopy(lua_State* state) {
     lua_pushstring(state, nto);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     lua_pushfstring(state, "copy: Error, result code: %d", Result); 
     return 2;
@@ -287,7 +282,6 @@ int lua_chmod(lua_State* state) {
     lua_pushstring(state, path);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     lua_pushfstring(state, "attr: Error, result code: %d", Result); 
     return 2;
@@ -307,7 +301,6 @@ int lua_umount(lua_State* state) {
     lua_pushstring(state, name);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     lua_pushfstring(state, "unmount: error: %d", Result); 
     return 2;
@@ -327,7 +320,6 @@ int lua_mkfs(lua_State* state) {
     lua_pushstring(state, name);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     lua_pushfstring(state, "mkfs: error: %d", Result); 
     return 2;
@@ -345,6 +337,12 @@ int lua_vols(lua_State* state) {
 }
 
 extern "C"
+int lua_sysvol(lua_State* state) {
+  lua_pushstring(state, CKernel::Get()->mpPartitionName);
+  return 1;
+}
+
+extern "C"
 int fsop_one(lua_State* state, FRESULT (*func)(const char *), const char *fname) {
   if(!lua_isstring(state, 1)) {
     lua_pushnil(state);
@@ -357,7 +355,6 @@ int fsop_one(lua_State* state, FRESULT (*func)(const char *), const char *fname)
     lua_pushstring(state, name);
     return 1;
   } else {
-    lua_pop(state, 1);
     lua_pushnil(state);
     lua_pushfstring(state, "%s: error: %d", fname, Result); 
     return 2;
@@ -401,6 +398,7 @@ luaL_Reg const fs_funcs [] =
     { "unmount",          lua_umount },
     { "getvols",          lua_vols },
     { "format",           lua_mkfs },
+    { "sysvol",           lua_sysvol },
     { NULL,               NULL }
   };
 

@@ -37,13 +37,35 @@ CKernel::CKernel (void)
 {
 	assert (s_pThis == 0);
 	s_pThis = this;
+
+
 	mActLED.Blink (5);// show we are alive
+}
+
+
+void CKernel::CtrlAltDelete (void)
+{
+  assert (s_pThis != 0);
+  if(s_pThis->mShutdownMode == ShutdownNone) {
+    s_pThis->mShutdownMode = ShutdownHalt;
+  }    
+  else if(s_pThis->mShutdownMode == ShutdownHalt) {
+    s_pThis->mShutdownMode = ShutdownReboot;
+  }    
 }
 
 CLuposApp::TShutdownMode CKernel::Run (void)
 {
   mLogger.Write (GetKernelName (), LogNotice, "Starting ...");
   
+  CUSBKeyboardDevice *pKeyboard =
+    (CUSBKeyboardDevice *) CDeviceNameService::Get ()->GetDevice ("ukbd1", FALSE);
+  if (pKeyboard != 0) {
+    pKeyboard->RegisterShutdownHandler (CtrlAltDelete);
+  } else {
+    mLogger.Write (GetKernelName (), LogNotice, "Could not register shutdown handler!");
+  }
+
   mTimer.SetTimeZone (nTimeZone);
   if(mNet.IsRunning()) {
     new CNTPDaemon (NTPServer, &mNet);
@@ -51,9 +73,12 @@ CLuposApp::TShutdownMode CKernel::Run (void)
   } else {
     mLogger.Write (GetKernelName (), LogNotice, "No network, time not set.");
   }
-  
-  int res = lua_interface(CKernel::Get());
-  mLogger.Write (GetKernelName (), LogNotice, "\nLUPOS quit %d", res);
+
+  while(1) {
+    int res = lua_interface(CKernel::Get());
+    mShutdownMode = ShutdownNone;
+    mLogger.Write (GetKernelName (), LogNotice, "LUPOS warmstart (%d)", res);
+  }
   
   return ShutdownHalt;
 }

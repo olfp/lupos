@@ -34,6 +34,7 @@ public:
 	unsigned GetHeight (void) const;
 	unsigned GetColor (void) const;
 	unsigned GetBackColor (void) const;
+	const char *GetSysDevice (void) const;
 
 	const char *GetNetDevice (void) const;
 
@@ -68,6 +69,7 @@ private:
 	unsigned m_nHeight;
 	unsigned m_nColor;
 	unsigned m_nBackColor;
+	char m_SysDevice[20];
 
 	char m_NetDevice[20];
 

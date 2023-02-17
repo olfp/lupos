@@ -42,6 +42,7 @@ CKernelOptions::CKernelOptions (void)
 	strcpy (m_LogDevice, "tty1");
 	strcpy (m_KeyMap, DEFAULT_KEYMAP);
 	m_SoundDevice[0] = '\0';
+	strcpy (m_SysDevice, "SD:");
 
 	s_pThis = this;
 
@@ -105,6 +106,11 @@ CKernelOptions::CKernelOptions (void)
 			strncpy (m_NetDevice, pValue, sizeof m_NetDevice-1);
 			m_NetDevice[sizeof m_NetDevice-1] = '\0';
 		}
+                else if (strcmp (pOption, "sysdev") == 0)
+                {
+                        strncpy (m_SysDevice, pValue, sizeof m_SysDevice-1);
+                        m_SysDevice[sizeof m_SysDevice-1] = '\0';
+                }
 		else if (strcmp (pOption, "logdev") == 0)
 		{
 			strncpy (m_LogDevice, pValue, sizeof m_LogDevice-1);
@@ -196,6 +202,11 @@ unsigned CKernelOptions::GetColor (void) const
 unsigned CKernelOptions::GetBackColor (void) const
 {
 	return m_nBackColor;
+}
+
+const char *CKernelOptions::GetSysDevice (void) const
+{
+	return m_SysDevice;
 }
 
 const char *CKernelOptions::GetNetDevice (void) const

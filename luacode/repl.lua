@@ -63,7 +63,7 @@ local function repl_loop(prompt)
       io.write("\r\n")
       if #buf > 0 then
 				if buf == "??" then
-				  print("Sorry, no help available.");
+				  print("Use 'help' for help!");
         else
 				  local cmd = buf
 				  if _ENV[buf] and type(_ENV[buf]) == "function" then

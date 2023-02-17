@@ -9,7 +9,7 @@ CIRCLEHOME = $(CSTDLIB)/libs/circle
 NEWLIBDIR = $(CSTDLIB)/install/$(NEWLIB_ARCH)
 LUADIR = lua-5.4.1/src
 
-OBJS	= main.o kernel.o luaint.o lconsole.o lfilesystem.o
+OBJS	= main.o kernel.o luaint.o lconsole.o lfilesystem.o lgfx.o
 
 include $(CIRCLEHOME)/Rules.mk
 

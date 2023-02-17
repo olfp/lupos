@@ -5,16 +5,18 @@ function copy(pathplus)
   if not dir then
     return "Cannot find source volume or path for "..pathplus
   end
-  dryrun = opts:find("d")
+  local dryrun = opts:find("d")
+  local quiet = opts:find("q")
   local n = 0
   if opts:find("?") then
 	out = [[
 copy: copy file(s)
-Examples: copy foo.txt bar.txt ; copy *.txt archive ; copy sys/test.lua .
+Examples: copy "foo.txt>bar.txt" ; copy "*.txt>archive" ; copy "sys/test.lua>."
 Options after ?:
 	d - dry run, does not copy
+	q - quiet, no output
 ]]
-else
+  else
     if not type(path) == "table" then
       return "Cannot get souce and destination, FROM>TO needed."
     end
@@ -55,9 +57,9 @@ else
         end
       end
     end
-  end
-  if not quiet and n < 1 then
+    if not quiet and n < 1 then
 	out = "No files to copy."
+    end
   end
   return (out:gsub("^(.-)%s*$", "%1"))
 end

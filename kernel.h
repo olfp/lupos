@@ -26,6 +26,7 @@ class CKernel : public CLuposApp
 
   TShutdownMode Run (void);
 
+  static void CtrlAltDelete (void);
   static CKernel *Get (void);
 
  private:

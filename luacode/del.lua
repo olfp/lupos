@@ -21,7 +21,7 @@ Options after ?:
 	d - dry run, does not delete
 	q - quiet, no output
 ]]
-else
+  else
     local savepath = fs.getpath()
     go(path)
     for file, stat in pairs(dir) do
@@ -42,9 +42,9 @@ else
       end
     end
     go(savepath)
-  end
-  if not quiet and n < 1 then
+    if not quiet and n < 1 then
 	out = "No files to delete."
+    end
   end
   return (out:gsub("^(.-)%s*$", "%1"))
 end

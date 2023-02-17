@@ -153,6 +153,12 @@ public:
 	/// \return Operation successful?
 	boolean Initialize (void);
 
+	/// Switch Framebuffers
+	void SwitchBuffers(void);
+
+	/// Select Framebuffer
+	void SetBuffer(unsigned no);
+
 	/// \return Screen width in pixels
 	unsigned GetWidth (void) const;
 	/// \return Screen height in pixels
@@ -200,6 +206,9 @@ public:
 	/// \param nCount Phase (angle) of the current rotor symbol (0..3)
 	void Rotor (unsigned nIndex, unsigned nCount);
 
+	/// fill rect with color
+	void FillRect(unsigned x1, unsigned y1, unsigned x2, unsigned y2, TScreenColor Color);
+
 //private:
 public:
 #ifndef SCREEN_HEADLESS
@@ -241,6 +250,7 @@ private:
 	unsigned	 m_nInitHeight;
 #ifndef SCREEN_HEADLESS
 	boolean		 m_bVirtual;
+	boolean		 m_bFirstBuf;
 	CBcmFrameBuffer	*m_pFrameBuffer;
 	static const TScreenColor    m_AnsiColor[CANSI_NUMCOL];
 #endif

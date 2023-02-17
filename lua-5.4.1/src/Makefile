@@ -6,8 +6,8 @@
 # Your platform. See PLATS for possible values.
 PLAT= generic
 
-NEWLIBDIR = /home/olf/projects/circle/circle-stdlib/install/arm-none-circle
-CIRCLEHOME = /home/olf/projects/circle/circle-stdlib/libs/circle
+NEWLIBDIR = /home/olf/projects/lupos/circle-stdlib/install/arm-none-circle
+CIRCLEHOME = /home/olf/projects/lupos/circle-stdlib/libs/circle
 
 #pi3+ 
 #ARCH = -DAARCH=32 -mcpu=cortex-a72 -marm -mfpu=neon-vfpv4 -mfloat-abi=hard

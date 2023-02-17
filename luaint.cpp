@@ -22,6 +22,7 @@
 
 #include "lconsole.h"
 #include "lfilesystem.h"
+#include "lgfx.h"
 #include "luaint.h"
 
 
@@ -60,6 +61,8 @@ int lua_interface(CKernel *mKernel) {
   lua_setglobal(state, "console");
   luaopen_filesystem(state);
   lua_setglobal(state, "filesystem");
+  luaopen_gfx(state);
+  lua_setglobal(state, "gfx");
   lua_register(state, "reboot", lua_reboot);
   lua_register(state, "usleep", lua_usleep);
   int result = luaL_loadfile(state, "hello.lua");
@@ -75,7 +78,8 @@ int lua_interface(CKernel *mKernel) {
   }
 
   char line[200];                                                         
-  while(1) {                                                              
+  mKernel->mShutdownMode = CKernel::ShutdownHalt;
+  while(mKernel->mShutdownMode != CKernel::ShutdownReboot) {                                                              
     //mUSBHCI.UpdatePlugAndPlay();                                          
     printf("L0>");                                                        
     fflush(stdout);                                                       

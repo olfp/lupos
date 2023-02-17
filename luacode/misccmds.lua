@@ -16,7 +16,7 @@ function list(file)
 	return content
 end
 function help()
-	return list("sd:/sys/help.txt")
+	return list(filesystem.sysvol().."/sys/help.txt")
 end
 if not rawprint then
   rawprint = print

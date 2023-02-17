@@ -41,6 +41,7 @@
 
 #define CSTDLIBAPP_LEGACY_DEFAULT_PARTITION "emmc1-1"
 #define CSTDLIBAPP_DEFAULT_PARTITION "SD:"
+#define usbCSTDLIBAPP_DEFAULT_PARTITION "USB:"
 
 #define CSTDLIBAPP_WLAN_FIRMWARE_PATH   CSTDLIBAPP_DEFAULT_PARTITION "/firmware/"
 #define CSTDLIBAPP_WLAN_CONFIG_FILE     CSTDLIBAPP_DEFAULT_PARTITION "/wpa_supplicant.conf"
@@ -78,7 +79,8 @@ class CLuposApp
     mDeviceType (DeviceType),
     mWLAN (CSTDLIBAPP_WLAN_FIRMWARE_PATH),
     mNet(pIPAddress, pNetMask, pDefaultGateway, pDNSServer, DEFAULT_HOSTNAME, DeviceType),
-    mWPASupplicant (CSTDLIBAPP_WLAN_CONFIG_FILE)
+    mWPASupplicant (CSTDLIBAPP_WLAN_CONFIG_FILE),
+    mShutdownMode (ShutdownNone)
     {
     }
 
@@ -123,25 +125,11 @@ class CLuposApp
         
     if (!mEMMC.Initialize ())
       {
-	return false;
+        mLogger.Write (GetKernelName (), LogNotice,
+          "EMMS/SD init failed");
+	//return false;
       }
-	  
-    char const *partitionName = mpPartitionName;
-	  
-    // Recognize the old default partion name
-    if (strcmp(partitionName, CSTDLIBAPP_LEGACY_DEFAULT_PARTITION) == 0)
-      {
-	partitionName = CSTDLIBAPP_DEFAULT_PARTITION;
-      }
-	  
-    if (f_mount (&mFileSystem, partitionName, 1) != FR_OK)
-      {
-	mLogger.Write (GetKernelName (), LogError,
-		       "Cannot mount partition: %s", partitionName);
-	      
-	return false;
-      }
-	  
+
 #if !defined(__aarch64__) || !defined(LEAVE_QEMU_ON_HALT)
     // The USB driver is not supported under 64-bit QEMU, so
     // the initialization must be skipped in this case, or an
@@ -151,6 +139,35 @@ class CLuposApp
 	return false;
       }
 #endif
+	  
+    //char const *partitionName = mpPartitionName;
+    char const *partitionName = mOptions.GetSysDevice ();
+    mLogger.Write (GetKernelName (), LogNotice, 
+	"System device/partition: %s", partitionName);
+ 
+/*
+    // Recognize the old default partion name
+    if (strcmp(partitionName, CSTDLIBAPP_LEGACY_DEFAULT_PARTITION) == 0)
+      {
+	partitionName = CSTDLIBAPP_DEFAULT_PARTITION;
+      }
+*/	  
+    if (f_mount (&mFileSystem, partitionName, 1) != FR_OK)
+      {
+	mLogger.Write (GetKernelName (), LogError,
+		       "Cannot mount partition: %s", partitionName);
+	      
+	return false;
+      }
+    if (f_chdrive(partitionName) != FR_OK)
+      {
+        mLogger.Write (GetKernelName (), LogError,
+                       "Cannot switch to drive: %s", partitionName);
+
+        return false;
+      }
+    mpPartitionName = partitionName;
+
 	  
     if (!mConsole.Initialize ())
       {
@@ -239,6 +256,7 @@ class CLuposApp
   CBcm4343Device     mWLAN;
   CNetSubSystem      mNet;
   CWPASupplicant     mWPASupplicant;
+  volatile TShutdownMode mShutdownMode;
 };
 
 #endif

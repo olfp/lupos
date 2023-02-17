@@ -48,6 +48,7 @@ CScreenDevice::CScreenDevice (unsigned nWidth, unsigned nHeight, unsigned nColor
 :	m_nInitWidth (nWidth),
 	m_nInitHeight (nHeight),
 	m_bVirtual (bVirtual),
+	m_bFirstBuf(TRUE),
 	m_pFrameBuffer (0),
 	m_pBuffer (0),
 	m_nState (ScreenStateStart),
@@ -84,70 +85,83 @@ boolean CScreenDevice::Initialize (void)
 {
 	if (!m_bVirtual)
 	{
-		m_pFrameBuffer = new CBcmFrameBuffer (m_nInitWidth, m_nInitHeight, DEPTH);
+	  m_pFrameBuffer = new CBcmFrameBuffer (m_nInitWidth, m_nInitHeight, DEPTH, m_nInitWidth, m_nInitHeight<<1);
 #if DEPTH == 8
-		m_pFrameBuffer->SetPalette (CANSI_BLACK,   PAL16_CANSI_BLACK);
-		m_pFrameBuffer->SetPalette (CANSI_RED,     PAL16_CANSI_RED);
-		m_pFrameBuffer->SetPalette (CANSI_GREEN,   PAL16_CANSI_GREEN);
-		m_pFrameBuffer->SetPalette (CANSI_YELLOW,  PAL16_CANSI_YELLOW);
-		m_pFrameBuffer->SetPalette (CANSI_BLUE,    PAL16_CANSI_BLUE);
-		m_pFrameBuffer->SetPalette (CANSI_MAGENTA, PAL16_CANSI_MAGENTA);
-		m_pFrameBuffer->SetPalette (CANSI_CYAN,    PAL16_CANSI_CYAN);
-		m_pFrameBuffer->SetPalette (CANSI_WHITE,   PAL16_CANSI_WHITE);
-		m_pFrameBuffer->SetPalette (CANSI_BLACK   + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_BLACK));
-		m_pFrameBuffer->SetPalette (CANSI_RED     + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_RED));
-		m_pFrameBuffer->SetPalette (CANSI_GREEN   + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_GREEN));
-		m_pFrameBuffer->SetPalette (CANSI_YELLOW  + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_YELLOW));
-		m_pFrameBuffer->SetPalette (CANSI_BLUE    + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_BLUE));
-		m_pFrameBuffer->SetPalette (CANSI_MAGENTA + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_MAGENTA));
-		m_pFrameBuffer->SetPalette (CANSI_CYAN    + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_CYAN));
-		m_pFrameBuffer->SetPalette (CANSI_WHITE   + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_WHITE));
-		m_pFrameBuffer->SetPalette (HIGH_COLOR, PAL16_BRIGHT);
-		m_pFrameBuffer->SetPalette (HALF_COLOR, PAL16_HALF);
+	  m_pFrameBuffer->SetPalette (CANSI_BLACK,   PAL16_CANSI_BLACK);
+	  m_pFrameBuffer->SetPalette (CANSI_RED,     PAL16_CANSI_RED);
+	  m_pFrameBuffer->SetPalette (CANSI_GREEN,   PAL16_CANSI_GREEN);
+	  m_pFrameBuffer->SetPalette (CANSI_YELLOW,  PAL16_CANSI_YELLOW);
+	  m_pFrameBuffer->SetPalette (CANSI_BLUE,    PAL16_CANSI_BLUE);
+	  m_pFrameBuffer->SetPalette (CANSI_MAGENTA, PAL16_CANSI_MAGENTA);
+	  m_pFrameBuffer->SetPalette (CANSI_CYAN,    PAL16_CANSI_CYAN);
+	  m_pFrameBuffer->SetPalette (CANSI_WHITE,   PAL16_CANSI_WHITE);
+	  m_pFrameBuffer->SetPalette (CANSI_BLACK   + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_BLACK));
+	  m_pFrameBuffer->SetPalette (CANSI_RED     + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_RED));
+	  m_pFrameBuffer->SetPalette (CANSI_GREEN   + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_GREEN));
+	  m_pFrameBuffer->SetPalette (CANSI_YELLOW  + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_YELLOW));
+	  m_pFrameBuffer->SetPalette (CANSI_BLUE    + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_BLUE));
+	  m_pFrameBuffer->SetPalette (CANSI_MAGENTA + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_MAGENTA));
+	  m_pFrameBuffer->SetPalette (CANSI_CYAN    + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_CYAN));
+	  m_pFrameBuffer->SetPalette (CANSI_WHITE   + COFF_BRIGHT,  BRIGHT16(PAL16_CANSI_WHITE));
+	  m_pFrameBuffer->SetPalette (HIGH_COLOR, PAL16_BRIGHT);
+	  m_pFrameBuffer->SetPalette (HALF_COLOR, PAL16_HALF);
 #endif
-		if (!m_pFrameBuffer->Initialize ())
-		{
-			return FALSE;
-		}
-
-		if (m_pFrameBuffer->GetDepth () != DEPTH)
-		{
-			return FALSE;
-		}
-
-		m_pBuffer = (TScreenColor *) (uintptr) m_pFrameBuffer->GetBuffer ();
-		m_nSize   = m_pFrameBuffer->GetSize ();
-		m_nPitch  = m_pFrameBuffer->GetPitch ();
-		m_nWidth  = m_pFrameBuffer->GetWidth ();
-		m_nHeight = m_pFrameBuffer->GetHeight ();
-
-		// Ensure that each row is word-aligned so that we can safely use memcpyblk()
-		if (m_nPitch % sizeof (u32) != 0)
-		{
-			return FALSE;
-		}
-		m_nPitch /= sizeof (TScreenColor);
+	  if (!m_pFrameBuffer->Initialize ())
+	    {
+	      return FALSE;
+	    }
+	  
+	  if (m_pFrameBuffer->GetDepth () != DEPTH)
+	    {
+	      return FALSE;
+	    }
+	  
+	  m_pBuffer = (TScreenColor *) (uintptr) m_pFrameBuffer->GetBuffer ();
+	  m_nSize   = m_pFrameBuffer->GetSize ();
+	  m_nPitch  = m_pFrameBuffer->GetPitch ();
+	  m_nWidth  = m_pFrameBuffer->GetWidth ();
+	  m_nHeight = m_pFrameBuffer->GetHeight ();
+	  
+	  // Ensure that each row is word-aligned so that we can safely use memcpyblk()
+	  if (m_nPitch % sizeof (u32) != 0)
+	    {
+	      return FALSE;
+	    }
+	  m_nPitch /= sizeof (TScreenColor);
 	}
 	else
-	{
-		m_nWidth = m_nInitWidth;
-		m_nHeight = m_nInitHeight;
-		m_nSize = m_nWidth * m_nHeight * sizeof (TScreenColor);
-		m_nPitch = m_nWidth;
-
-		m_pBuffer = new TScreenColor[m_nWidth * m_nHeight];
-	}
-
+	  {
+	    m_nWidth = m_nInitWidth;
+	    m_nHeight = m_nInitHeight;
+	    m_nSize = m_nWidth * m_nHeight * sizeof (TScreenColor);
+	    m_nPitch = m_nWidth;
+	    
+	    m_pBuffer = new TScreenColor[m_nWidth * m_nHeight];
+	  }
+	
 	m_nUsedHeight = m_nHeight / m_CharGen.GetCharHeight () * m_CharGen.GetCharHeight ();
 	m_nScrollEnd = m_nUsedHeight;
-
+	
 	CursorHome ();
 	ClearDisplayEnd ();
 	InvertCursor ();
-
+	
 	CDeviceNameService::Get ()->AddDevice ("tty1", this, FALSE);
-
+	
 	return TRUE;
+}
+
+void CScreenDevice::SwitchBuffers(void) 
+{
+  m_pFrameBuffer->WaitForVerticalSync();
+  m_bFirstBuf = !m_bFirstBuf;
+  m_pFrameBuffer->SetVirtualOffset(0, m_bFirstBuf ? 0 : m_nHeight);
+}
+
+void CScreenDevice::SetBuffer(unsigned no) 
+{
+  m_pFrameBuffer->WaitForVerticalSync();
+  m_pFrameBuffer->SetVirtualOffset(0, no ? m_nHeight : 0);
 }
 
 unsigned CScreenDevice::GetWidth (void) const
@@ -905,6 +919,20 @@ TScreenColor CScreenDevice::GetPixel (unsigned nPosX, unsigned nPosY)
 	}
 	
 	return BLACK_COLOR;
+}
+
+void CScreenDevice::FillRect(unsigned x1, unsigned y1, unsigned x2, unsigned y2, TScreenColor Color)
+{
+  unsigned yoff = m_bFirstBuf ? m_nHeight : 0;
+  y1 += yoff;
+  y2 += yoff;
+  for (unsigned y = y1; y < y2; y++)
+    {
+      for (unsigned x = x1; x < x2; x++)
+	{
+	  m_pBuffer[m_nPitch * y + y] = Color;
+	}
+    }
 }
 
 void CScreenDevice::Rotor (unsigned nIndex, unsigned nCount)
